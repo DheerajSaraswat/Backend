@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    referenceToken: {
+    refreshToken: {
       type: String,
     },
   },
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", async function () {
+userSchema.pre("save", async function (next) {
   // we don't use arrow function because it does not have 'this' context
   if (!this.isModified("password")) return next();
 
