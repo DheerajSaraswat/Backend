@@ -55,11 +55,12 @@ userSchema.pre("save", async function (next) {
   // we don't use arrow function because it does not have 'this' context
   if (!this.isModified("password")) return next();
 
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10); //  hash the password before saving to database
   next();
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
+  console.log(typeof password, typeof this.password);
   return await bcrypt.compare(password, this.password);
 };
 
@@ -80,7 +81,7 @@ userSchema.methods.generateAccessToken = function () {
 // refresh token consists less data than access token
 
 userSchema.methods.generateRefreshToken = function () {
-   return jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },
