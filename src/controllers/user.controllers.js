@@ -234,4 +234,92 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password Changes Successfully"));
 });
 
-export { userRegister, loginUser, logout, refreshAccessToken, changePassword };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "User fetched successfully"));
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+  if (!fullName || !email) {
+    throw new ApiError(401, "Please provide full name and email");
+  }
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName,
+        email,
+      },
+    },
+    { new: true } //returns updated information
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile updated successfully!"));
+});
+
+// It's better to create different endpoints for file handling
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+  if (!avatarLocalPath) {
+    throw new ApiError(401, "Avatar file is missing");
+  }
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  if (!avatar) {
+    throw new ApiError(200, "Failed to upload image on Cloudinary");
+  }
+  const updatedAvatar = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedAvatar, "Image uploaded successfully"));
+});
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+  const coverImageLocalPath = req.file?.path;
+  if (!coverImageLocalPath) {
+    throw new ApiError(401, "No Cover Image provided");
+  }
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const updatedCoverImage = User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        coverImage: coverImage.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedCoverImage,
+        "Cover Image  has been Updated Successfully"
+      )
+    );
+});
+
+export {
+  userRegister,
+  loginUser,
+  logout,
+  refreshAccessToken,
+  changePassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateUserAvatar,
+};
