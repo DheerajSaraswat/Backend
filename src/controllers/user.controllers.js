@@ -5,6 +5,7 @@ import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -316,7 +317,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     );
 });
 
-const getUserProfileDetail = asyncHandler(async () => {
+const getUserProfileDetail = asyncHandler(async (req, res) => {
   const { username } = req.params;
   if (!username?.trim()) {
     throw new ApiError(400, "Username is required");
@@ -370,7 +371,7 @@ const getUserProfileDetail = asyncHandler(async () => {
         coverImage: 1,
         subscribersCount: 1,
         subscribedToCount: 1,
-        isSubscribed: 1
+        isSubscribed: 1,
       },
     },
   ]);
@@ -384,6 +385,49 @@ const getUserProfileDetail = asyncHandler(async () => {
     .json(new ApiResponse(200, channel[0], "Successfully fetched user data"));
 });
 
+const getWatchHistory = asyncHandler(async (req, res) => {
+  const user = await User.aggregate([
+    {
+      $match: new mongoose.Schema.Types.ObjectId(req.user._id),
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    fullName: 1,
+                    username: 1,
+                    avatar: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $addFields:{
+              owner: "$owner"
+            }
+          }
+        ],
+      },
+    },
+  ]);
+  return res
+  .status(200)
+  .json(new ApiResponse(200,user[0].watchHiistory,'User watch history successfully fetched'));
+});
+
 export {
   userRegister,
   loginUser,
@@ -395,4 +439,5 @@ export {
   updateUserAvatar,
   updateUserCoverImage,
   getUserProfileDetail,
+  getWatchHistory,
 };
