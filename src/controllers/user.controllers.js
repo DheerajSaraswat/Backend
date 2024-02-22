@@ -350,15 +350,17 @@ const getUserProfileDetail = asyncHandler(async (req, res) => {
     {
       $addFields: {
         subscribersCount: {
-          $size: "$subscribers",
+          $size: { $ifNull: ["$subscribers", []] },
         },
         subscribedToCount: {
-          $size: "subscribedTo",
+          $size: { $ifNull: ["$subscriberTo", []] },
         },
         isSubscribed: {
-          if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-          then: true,
-          else: false,
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
         },
       },
     },
@@ -388,7 +390,9 @@ const getUserProfileDetail = asyncHandler(async (req, res) => {
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
-      $match: new mongoose.Schema.Types.ObjectId(req.user._id),
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
     },
     {
       $lookup: {
@@ -415,17 +419,23 @@ const getWatchHistory = asyncHandler(async (req, res) => {
             },
           },
           {
-            $addFields:{
-              owner: "$owner"
-            }
-          }
+            $addFields: {
+              owner: "$owner",
+            },
+          },
         ],
       },
     },
   ]);
   return res
-  .status(200)
-  .json(new ApiResponse(200,user[0].watchHiistory,'User watch history successfully fetched'));
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistory,
+        "User watch history successfully fetched"
+      )
+    );
 });
 
 export {
