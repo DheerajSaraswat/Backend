@@ -44,7 +44,21 @@ const publishAVideo = asyncHandler(async (req, res) => {
     );
 });
 const updateVideoDetails = asyncHandler(async (req, res) => {
-    console.log(req.params);
+    
+    const {title, description} = req.body
+    const video = await Video.findByIdAndUpdate(
+      req.params.videoId,
+      {
+        $set:{
+          title,
+          description
+        }
+      },
+      {new: true} //return the updated document
+    )
+    return res
+    .status(200)
+    .json(new ApiResponse(200, video,"Video details have been updated"))
 });
 
 export { publishAVideo, updateVideoDetails };
