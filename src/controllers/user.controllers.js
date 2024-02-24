@@ -53,7 +53,7 @@ const userRegister = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with email or username already exists");
   }
   // As express provides req.body, similarly multer add more fields to the user req
-  console.log(req.files);
+  // console.log(req.files);
   const avatarLocalPath = req.files?.avatar[0]?.path;
   let coverImageLocalPath;
   if (

@@ -12,6 +12,7 @@ import {
   getUserProfileDetail,
   getWatchHistory,
 } from "../controllers/user.controllers.js";
+import {uploadVideoOnTube} from "../controllers/video.controllers.js"
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
