@@ -105,12 +105,70 @@ const updateVideo = asyncHandler(async (req, res) => {
 });
 const getVideoDetail = asyncHandler(async (req, res) => {
   const videoId = req.params;
-  const video = await Video.aggregate(
-    
-  );
+  const video = await Video.aggregate([
+    {
+      $match: {
+        _id: videoId,
+      },
+    },
+    {
+      $lookup: {
+        from: "User",
+        localField: "_id",
+        foreignField: "watchHistory",
+        as: "views",
+      },
+    },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        views: 1,
+        videoFile: 1,
+        thumbnail: 1,
+        duration: 1,
+      },
+    },
+  ]);
   return res
     .status(200)
-    .json(new ApiResponse(200, videoId, "Video Detail fectched successfully."));
+    .json(new ApiResponse(200, video, "Video Detail fectched successfully."));
+});
+const deleteVideo = asyncHandler(async (req, res) => {
+  const videoId = req.params.videoId;
+  const video = await Video.findByIdAndDelete(videoId);
+  return res.status(200).json(new ApiResponse(200, "Video deleted."));
+});
+const getAllVideos = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, userId } = req.body;
+console.log(req.query);
+  const video = await Video.aggregate([
+    {
+      $match: {
+        owner: userId,
+      },
+    },
+    {
+      $skip: (page - 1) * limit,
+    },
+    {
+      $limit: limit,
+    },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        description: 1,
+        thumbnail: 1,
+        duration: 1,
+      },
+    },
+    console.log(video)
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "All videos fetched successfully."));
 });
 
 export {
@@ -119,4 +177,6 @@ export {
   updateThumbnail,
   updateVideo,
   getVideoDetail,
+  deleteVideo,
+  getAllVideos,
 };

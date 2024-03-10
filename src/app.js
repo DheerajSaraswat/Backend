@@ -10,9 +10,9 @@ app.use(
   })
 );
 // console.log(app);
-app.use(express.json({ limit: "200mb" }));
+app.use(express.json({ limit: "20kb" }));
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
-app.use(express.static("./public"));
+app.use(express.static("public"));
 app.use(cookieParser());
 
 import userRouter from "./routes/user.routes.js";
