@@ -4,7 +4,7 @@ import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Video } from "../models/video.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { v2 } from "cloudinary";
+import mongoose from "mongoose";
 
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
@@ -105,6 +105,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 });
 const getVideoDetail = asyncHandler(async (req, res) => {
   const videoId = req.params;
+  console.log(videoId);
   const video = await Video.aggregate([
     {
       $match: {
@@ -132,7 +133,7 @@ const getVideoDetail = asyncHandler(async (req, res) => {
   ]);
   return res
     .status(200)
-    .json(new ApiResponse(200, video, "Video Detail fectched successfully."));
+    .json(new ApiResponse(200, video, "Video Detail fetched successfully."));
 });
 const deleteVideo = asyncHandler(async (req, res) => {
   const videoId = req.params.videoId;
@@ -141,11 +142,11 @@ const deleteVideo = asyncHandler(async (req, res) => {
 });
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, userId } = req.body;
-console.log(req.query);
+  console.log(userId);
   const video = await Video.aggregate([
     {
       $match: {
-        owner: userId,
+        owner: new mongoose.Types.ObjectId(userId),
       },
     },
     {
@@ -163,12 +164,26 @@ console.log(req.query);
         duration: 1,
       },
     },
-    console.log(video)
   ]);
 
   return res
     .status(200)
     .json(new ApiResponse(200, video, "All videos fetched successfully."));
+});
+const togglePublishStatus = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  if (!videoId) {
+    throw new ApiError(400, "Invalid request-toggle status");
+  }
+  await Video.findByIdAndUpdate(videoId, {
+    $set: {
+      isPublished: !Video.findById(videoId).isPublished
+    }
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Video published status toggled successfully."));
 });
 
 export {
@@ -179,4 +194,5 @@ export {
   getVideoDetail,
   deleteVideo,
   getAllVideos,
+  togglePublishStatus,
 };
