@@ -104,12 +104,12 @@ const updateVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, upatedVideo, "Video updated successfully."));
 });
 const getVideoDetail = asyncHandler(async (req, res) => {
-  const videoId = req.params;
-  console.log(videoId);
+  const {videoId} = req.params;
+  console.log(videoId)
   const video = await Video.aggregate([
     {
       $match: {
-        _id: videoId,
+        _id: new  mongoose.Types.ObjectId(videoId),
       },
     },
     {
@@ -142,7 +142,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
 });
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, userId } = req.body;
-  console.log(userId);
+  // console.log(userId);
   const video = await Video.aggregate([
     {
       $match: {
