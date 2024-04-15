@@ -6,17 +6,17 @@ const likeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
     },
-    video: {
+    videos: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Video",
-    },
-    post: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post"
+    }],
+    posts: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post"
     },
     likedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   },
   { timestamps: true }
