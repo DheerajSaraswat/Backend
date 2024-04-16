@@ -1,7 +1,6 @@
 import { Like } from "../models/like.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import mongoose from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
@@ -9,28 +8,44 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
   const user = await Like.findOne({
     likedBy: req.user._id,
   });
-  // console.log(user)
+  const video = await Like.findOne({
+    videos: videoId,
+  });
   let toggleLike;
   if (user) {
+    if(video){
+    toggleLike = await Like.findOneAndUpdate(
+       {
+         likedBy: req.user._id,
+       },
+       {
+         $pull: {
+           videos: videoId,
+         },
+       },
+       {
+         new: true,
+       }
+     )
+    } else {
     toggleLike = await Like.findOneAndUpdate(
       {
         likedBy: req.user._id,
       },
       {
         $push: {
-          videos: videoId,
+          videos: video,
         },
       },
       {
         new: true,
       }
     );
+  }
   } else {
     toggleLike = await Like.create({
-      videos: videoId ? videoId : null,
+      videos: videoId,
       likedBy: req.user._id,
-      comments: null,
-      posts: null,
     });
   }
   return res
@@ -43,7 +58,26 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
     likedBy: req.user._id,
   });
   let toggleComment;
+  const comment = await Like.findOne({
+    comments: commentId
+  })
+  console.log(comment);
   if (user) {
+    if(comment){
+      toggleComment = await Like.findOneAndUpdate(
+        {
+          likedBy: req.user._id,
+        },
+        {
+          $pull: {
+            comments: commentId,
+          },
+        },
+        {
+          new: 1,
+        }
+      );
+    } else {
     toggleComment = await Like.findOneAndUpdate(
       {
         likedBy: req.user._id,
@@ -57,14 +91,13 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         new: 1,
       }
     );
+  }
   } else {
     toggleComment = await Like.create({
       comments: commentId,
-      videos: null,
-      posts: null,
       likedBy: req.user._id,
     })
-    console.log(toggleComment);
+    // console.log(toggleComment);
     return res
            .status(200)
            .json(new ApiResponse(200, toggleComment, "Comment Like toggling done."))
@@ -75,8 +108,26 @@ const togglePostLike = asyncHandler( async(req, res)=>{
   const user = await Like.findOne({
     likedBy: req.user._id
   })
+  const post = await Like.findOne({
+    posts: postId
+  })
   let togglePost;
   if(user){
+    if(post){
+      togglePost = await Like.findOneAndUpdate(
+        {
+          likedBy: req.user._id
+        },
+        {
+          $pull: {
+            posts: postId
+          }
+        },
+        {
+          new: 1
+        }
+      )
+    } else {
     togglePost = await Like.findOneAndUpdate(
       {
         likedBy: req.user._id
@@ -90,6 +141,7 @@ const togglePostLike = asyncHandler( async(req, res)=>{
         new: 1
       }
     )
+  }
   } else {
     togglePost = await Like.create({
       posts: postId,

@@ -2,18 +2,18 @@ import mongoose, { mongo } from "mongoose";
 
 const likeSchema = new mongoose.Schema(
   {
-    comments: {
+    comments: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
-    },
+    }],
     videos: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Video",
     }],
-    posts: {
+    posts: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post"
-    },
+    }],
     likedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
