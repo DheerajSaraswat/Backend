@@ -5,6 +5,7 @@ import axios from 'axios';
 function App() {
   return <>
     <h1>hello</h1>
+    <h2>heu</h2>
   </>;
 }
 
