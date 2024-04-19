@@ -318,7 +318,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 const getUserProfileDetail = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { username } = req.body;
   if (!username?.trim()) {
     throw new ApiError(400, "Username is required");
   }

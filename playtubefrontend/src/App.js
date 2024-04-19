@@ -1,12 +1,12 @@
-import logo from './logo.svg';
+import Login from './components/Login.jsx';
 import './App.css';
-import axios from 'axios';
 
 function App() {
-  return <>
-    <h1>hello</h1>
-    <h2>heu</h2>
-  </>;
+  return (
+    <>
+      <Login />
+    </>
+  );
 }
 
 export default App;
