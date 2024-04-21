@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String, // cloudinary url
       required: true,
     },
+    // https://api.dicebear.com/5.x/initials/svg?seed=${firstname} ${lastname}
     coverImage: {
       type: String, //cloudinary url
     },
