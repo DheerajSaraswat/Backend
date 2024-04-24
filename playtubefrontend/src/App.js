@@ -1,10 +1,10 @@
-import Login from './components/Login.jsx';
+import Layout from './components/Layout.jsx';
 import './App.css';
 
 function App() {
   return (
     <>
-      <Login />
+      < Layout />
     </>
   );
 }
