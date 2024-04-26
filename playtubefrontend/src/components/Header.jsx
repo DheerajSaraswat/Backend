@@ -19,7 +19,7 @@ function Header() {
         </div>
         <div className="flex gap-4 mr-5">
           <button className="text-white text-xl">Log in</button>
-          <button className="bg-[#90448c] text-black text-xl px-6 py-2 active:scale-90 duration-75">
+          <button className="bg-[#AE7AFF] text-black text-xl px-6 py-2 active:scale-90 duration-75">
             Sign up
           </button>
         </div>
