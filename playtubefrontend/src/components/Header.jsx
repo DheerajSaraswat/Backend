@@ -14,7 +14,7 @@ function Header() {
           <input
             type="text"
             placeholder="Search.."
-            className="outline-none bg-transparent"
+            className="outline-none bg-transparent w-80"
           />
         </div>
         <div className="flex gap-4 mr-5">
