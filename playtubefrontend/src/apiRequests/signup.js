@@ -10,4 +10,4 @@ export const signin = async( (data, dispatch)=>{
     } catch (error) {
         
     }
-} 
+} )
