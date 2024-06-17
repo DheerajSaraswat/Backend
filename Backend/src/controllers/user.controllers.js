@@ -29,8 +29,8 @@ const userRegister = asyncHandler(async (req, res) => {
   // create user object- create entry in db
   // remove password and refresh token from response
   // check for user creation
-
-  const { fullName, username, email, password } = req.body; //req.body gives access  to data sent by client and it is provided by express
+  console.log(req.body);
+  const { fullName, username, email, password, avatar, coverImage } = req.body; //req.body gives access  to data sent by client and it is provided by express
 
   if (
     [fullName, username, email, password].some((field) => field?.trim() === "")
@@ -53,8 +53,9 @@ const userRegister = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with email or username already exists");
   }
   // As express provides req.body, similarly multer add more fields to the user req
-  // console.log(req.files);
-  const avatarLocalPath = req.files?.avatar[0]?.path;
+  console.log(req.files);
+  const avatarLocalPath = req.files?.avatar[0].path;
+
   let coverImageLocalPath;
   if (
     req.files &&
@@ -65,11 +66,15 @@ const userRegister = asyncHandler(async (req, res) => {
   }
 
   // Image uploading on cloudinary
+  console.log(req.body);
   const avatarUpload = await uploadOnCloudinary(avatarLocalPath);
   const coverImageUpload = await uploadOnCloudinary(coverImageLocalPath);
-
+console.log(avatarUpload);
   if (!avatarUpload) {
     throw new ApiError(400, "Avatar is required.");
+  }
+  if(!coverImageUpload){
+    throw new ApiError(400, "CoverImage is required")
   }
 
   //User object
