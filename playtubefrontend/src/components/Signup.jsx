@@ -117,17 +117,12 @@
 import { useState } from "react";
 // import { useDispatch } from "react-redux";
 import { signup } from "../apiRequests/signup.js";
+import { login } from "../apiRequests/login.js";
+import { useDispatch } from "react-redux";
 
 function Signup() {
   const [isMember, setIsMember] = useState(false);
-  const [data, setData] = useState({
-    username: "",
-    fullName: "",
-    email: "",
-    password: "",
-    avatar: "",
-    coverImage: "",
-  });
+  const dispatch = useDispatch();
 
   function changePage() {
     setIsMember(!isMember);
@@ -139,33 +134,31 @@ function Signup() {
 
     const values = [...formData.values()];
     const isEmpty = values.includes("");
-    const isAvatarEmpty = values[3].name === "";
-    const isCoverImageEmpty = values[4].name === "";
-    if (isEmpty || isAvatarEmpty || isCoverImageEmpty) {
-      console.log("All fields are required");
+    if (isMember) {
+      if (isEmpty) {
+        console.log("All field are required");
+      }
+    } else {
+      const isAvatarEmpty = values[3].name === "";
+      const isCoverImageEmpty = values[4].name === "";
+      if (isEmpty || isAvatarEmpty || isCoverImageEmpty) {
+        console.log("All fields are required");
+      }
     }
-    const { fullName, username, email, password, avatar, coverImage } =
-      Object.fromEntries(formData);
-    // const avatarPath = avatar.name;
-    // const coverImagePath = coverImage.name;
-    // formData.append('avatar', avatar)
-    // formData.append('coverImage', coverImage)
-    // setData({
-    //   fullName,
-    //   username,
-    //   email,
-    //   password,
-    //   avatar,
-    //   coverImage,
-    // });
-    // console.log(data);
-    uploadData(formData);
+    uploadData(formData)
   }
 
   async function uploadData(data) {
-    const res = await signup(data);
-    console.log("SUCCESSFULLY REGISTERED");
-    console.log(res);
+    console.log(data);
+    if (!isMember) {
+      const res = await signup(data, dispatch);
+      console.log("SUCCESSFULLY REGISTERED");
+      console.log(res);
+    } else {
+      const res = await login(data, dispatch);
+      console.log("SUCCESSFULLY LOGINED");
+      console.log(res);
+    }
   }
 
   return (

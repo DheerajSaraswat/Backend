@@ -29,8 +29,8 @@ const userRegister = asyncHandler(async (req, res) => {
   // create user object- create entry in db
   // remove password and refresh token from response
   // check for user creation
-  console.log(req.body);
-  const { fullName, username, email, password, avatar, coverImage } = req.body; //req.body gives access  to data sent by client and it is provided by express
+  // console.log(req.body);
+  const { fullName, username, email, password } = req.body; //req.body gives access  to data sent by client and it is provided by express
 
   if (
     [fullName, username, email, password].some((field) => field?.trim() === "")
@@ -106,16 +106,15 @@ const loginUser = asyncHandler(async (req, res) => {
   //password check
   //access and referesh token
   //send cookie
-
   const { username, email, password } = req.body;
   // if (!username && !email) {
-  //   throw new ApiError(400, "Provide All fields");
-  // }
-  const user = await User.findOne({
-    $or: [{ username }, { email }],
-  });
-  console.log(user.password);
-  console.log(password);
+    //   throw new ApiError(400, "Provide All fields");
+    // }
+    const user = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+    console.log("hello");
+    console.log(req);
   const isPasswordValid = await user.isPasswordCorrect(password);
   console.log(isPasswordValid);
   if (!isPasswordValid) {
